@@ -5,3 +5,5 @@ second_month = 'Month 2: repaid 250'
 third_month = 'Month 3: repaid 500'
 
 # write your code here
+
+print(f"{loan_principal}\n{first_month}\n{second_month}\n{third_month}\n{final_output}")
