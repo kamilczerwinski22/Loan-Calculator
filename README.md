@@ -1,3 +1,8 @@
 ## Loan calculator project from Jetbrains - basics of python
 
-## Ongoing
+## COMPLETED
+
+Possible TODO's:
+* Testing
+* Better CLI handling (all in class)
+* Better input checking
