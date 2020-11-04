@@ -1,4 +1,4 @@
-from math import ceil, pow, sqrt, log
+from math import ceil, pow, log
 import argparse
 
 class LoanCalculator:
@@ -9,10 +9,12 @@ class LoanCalculator:
     :param annuity_monthly_payment: Amount of money user needs to pay monthly excluding last month (default None)
     :param num_of_payments: Number of months needed to fully repay loan (default None)
     :param loan_interest: Loan interest value. Input type is int and represents % (default None), float after function call
+    :param overpayment: Loan overpayment - for diff calculated during calculation, for annuity using formula
     :type loan_principal: int or float
     :type annuity_monthly_payment: int or float
     :type num_of_payments: int
     :type loan_interest: int or float
+    :type overpayment: int or float
     """
 
     def __init__(self, loan_principal=None, annuity_monthly_payment=None, num_of_payments=None, loan_interest=0):
@@ -47,39 +49,13 @@ class LoanCalculator:
             self.calculate_num_of_monthly_payments()
 
     def __repr__(self):
-        return f"Credit principal: {self.loan_principal} with {len(self.months_and_repaids)} months repaid"
+        return f"Credit principal: {self.loan_principal}" \
+               f"Number of months: {self.num_of_payments}" \
+               f"Loan interest in float: {self.loan_interest}" \
+               f"Overpayment: {self.overpayment}"
 
     def __str__(self):
         return f"Loan principal: {self.loan_principal}"
-
-    @property
-    def months_repaids(self):
-        """
-        Getter for monthly_repaids dictionary.
-        :return: String showing all months and corresponding repaid values
-        :rtype: str
-        """
-        result = ''
-        for month in self.months_and_repaids:
-            result += f"Month {month}: repaid {self.months_and_repaids[month]}" + "\n"
-        return result.rstrip("\n")  # strip last \n
-
-    @months_repaids.setter
-    def months_repaids(self, months_dict):
-        """
-        Setter for adding months with repaid values to instance monthly_repaids variable.
-        :param months_dict: Dictionary with months and values. Same keys are overwritten
-        :type months_dict: dict
-        """
-        self.months_and_repaids = {**self.months_and_repaids, **months_dict}
-
-    def total_repaid(self):
-        """
-        Method for total repaid (sum of all values in the months_and_repaids dictionary).
-        :return: Sum of all repaid amounts (all values in monthly_repaids dictionary)
-        :rtype: int
-        """
-        return sum(self.months_and_repaids.values())
 
 
     def calculate_annuity_payment(self):
@@ -109,8 +85,6 @@ class LoanCalculator:
     def calculate_loan_interest(self):
         """
         Method with formula for calculating loan interest for 12 months period. Right now works as a setter.
-        # :return: Float number with % value converted to float value having regard to 12 moths period.
-        # :rtype: float
         """
         self.loan_interest = self.loan_interest / (12 * 100) # (loan interest in %) / (12 months * 100%)
 
@@ -121,8 +95,6 @@ class LoanCalculator:
     def calculate_num_of_monthly_payments(self):
         """
         Method with formula for calculating number of months. Right now works as a setter.
-        # :return: Number of months needed to repay loan - ceil of the number
-        # :rtype: int
         """
         self.num_of_payments = ceil(log((self.annuity_monthly_payment /
                                          (self.annuity_monthly_payment - self.loan_interest * self.loan_principal)),
@@ -174,6 +146,7 @@ class LoanCalculator:
         print(f"Month {month}: payment is {payment}")
 
     def overpayment_print(self):
+        """Helper method for printing current overpayment."""
         print(f"Overpayment = {self.overpayment}")
 
     def calculate_annuity_overpayment(self):
@@ -185,7 +158,6 @@ def input_handler():
     """Input handler for taking values from CLI using argparse module."""
 
     error_message = "Incorrect parameters"
-
 
     def annuity_payments_handler(results):
         """Handler function with all possible combinations for annuity payment  - can calculate number of monthly
@@ -265,6 +237,7 @@ def input_handler():
                     exit()
 
 
+    #PARSER
     parser = argparse.ArgumentParser(description='Loan calculator')
 
     # All numeric values are converted to float at the start. All user input checking will be evaluated later.
@@ -281,7 +254,6 @@ def input_handler():
 
 
     # differentiated payment
-
     if CLI_results.loan_type == 'diff':
         loan = LoanCalculator(loan_principal=CLI_results.principal,
                               num_of_payments=CLI_results.num_of_months,
@@ -292,45 +264,5 @@ def input_handler():
     # annuity payment
     if CLI_results.loan_type == 'annuity':
         annuity_payments_handler(CLI_results)
-
-
-
-
-    # print(f"What do you want to calculate?\n"
-    #       f"type \"n\" for number of monthly payments,\n"
-    #       f"type \"a\" for annuity monthly payment amount,\n"
-    #       f"type \"p\" for loan principal:")
-    #
-    # user_choice = input()
-    # if user_choice == 'n':  # calculate number of monthly payments
-    #     user_loan_principal = float(input("Enter the loan principal:"))
-    #     user_monthly_payment = float(input("Enter the monthly payment:"))
-    #     user_loan_interest = float(input("Enter the loan interest:"))
-    #     loan = LoanCalculator(loan_principal=user_loan_principal,
-    #                           annuity_monthly_payment=user_monthly_payment,
-    #                           loan_interest=user_loan_interest)
-    #     loan.num_of_months_print()
-    #
-    # elif user_choice == 'a':  # calculate annuity monthly payment amount
-    #     user_loan_principal = float(input("Enter the loan principal:"))
-    #     user_num_of_periods = float(input("Enter the number of periods:"))
-    #     user_loan_interest = float(input("Enter the loan interest:"))
-    #     loan = LoanCalculator(loan_principal=user_loan_principal,
-    #                           num_of_payments=user_num_of_periods,
-    #                           loan_interest=user_loan_interest)
-    #     loan.annuity_payment_print()
-    #
-    # elif user_choice == 'p':  # calculate loan principal
-    #     user_annuity_payment = float(input("Enter the annuity payment:"))
-    #     user_num_of_periods = float(input("Enter the number of periods:"))
-    #     user_loan_interest = float(input("Enter the loan interest:"))
-    #     loan = LoanCalculator(annuity_monthly_payment=user_annuity_payment,
-    #                           num_of_payments=user_num_of_periods,
-    #                           loan_interest=user_loan_interest)
-    #     loan.loan_principal_print()
-    # else:
-    #     pass
-
-
 
 input_handler()
