@@ -7,3 +7,7 @@ Possible TODO's:
 * Better CLI handling (all in class)
 * Better input checking
 * Better documentation
+
+
+Comments:
+Spaces in catalog are Jetbrains standard, personally I would use 'loan_calculator'
